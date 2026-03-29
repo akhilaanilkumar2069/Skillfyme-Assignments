@@ -1,9 +1,13 @@
 {
   "name": "account-service",
   "version": "1.0.0",
-  "main": "app.js",
+  "description": "Account microservice for banking system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "express": "^4.18.2",
-    "axios": "^1.6.0"
+    "axios": "^1.6.7"
   }
 }
