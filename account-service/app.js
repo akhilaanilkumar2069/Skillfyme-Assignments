@@ -9,7 +9,7 @@ let accounts = [];
 
 // Root health-check route
 app.get('/', (req, res) => {
-    res.send("✅ Account Service is running");
+    res.send("Account Service is running");
 });
 
 // Create a new account
@@ -44,4 +44,4 @@ app.post('/transfer', async (req, res) => {
 
 // Start server
 const PORT = 3000;
-app.listen(PORT, () => console.log(`🚀 Account Service running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Account Service running on port ${PORT}`));
