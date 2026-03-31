@@ -1,44 +1,52 @@
 version: "3.8"
 networks:
   skillfy-network:
-    driver: overlay #Define an overlay network for inter-service communication
+    driver: overlay   # Define an overlay network for inter-service communication
+
 services:
   account-service:
-    image: devopsakhila/account-service:v1
+    image: devopsakhila/account-service:v2
     deploy:
       replicas: 3
     ports:
-        - 8080:3000
-    networks:
-        - skillfy-network
-  transaction-service:
-    image: devopsakhila/transaction-service:v1
-    deploy:
-      replicas: 3
-      update_config:  #Configure rolling update strategy
-        parallelism: 1 #Updates 1 container at a time
-        delay: 10s #Wait 10 seconds between updates
-      restart_policy: #Configure restart policy for failed containers
-        order: start-first #Start new container before stopping old one --> zero downtime during updates
-      placement:
-        preferences:
-         - spread: node.id      
+      - 8080:3000
     networks:
       - skillfy-network
+
+  transaction-service:
+    image: devopsakhila/transaction-service:v2
+    ports:
+      - 8081:8080
+    deploy:
+      replicas: 3
+      update_config:        # Configure rolling update strategy
+        parallelism: 1      # Updates 1 container at a time
+        delay: 10s          # Wait 10 seconds between updates
+        order: start-first  # Start new container before stopping old one
+      restart_policy:       # Restart policy for failed containers
+        condition: any
+        delay: 5s
+        max_attempts: 3
+      placement:
+        preferences:
+          - spread: node.id
+    networks:
+      - skillfy-network
+
   notification-service:
-    image: devopsakhila/notification-service:v1
+    image: devopsakhila/notification-service:v2
     deploy:
       replicas: 3
       update_config:
-        delay: 10s
         parallelism: 1
-      restart_policy:  #Auto-Restart Policy
+        delay: 10s
+      restart_policy:       # Auto-Restart Policy
         condition: any
         delay: 5s
-        max_attempts: 3 #Ensures service resiliency during failures.
+        max_attempts: 3     # Ensures service resiliency during failures
       placement:
         preferences:
-         - spread: node.id
+          - spread: node.id
     ports:
       - 5000:5000
     networks:

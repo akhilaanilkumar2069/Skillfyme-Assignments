@@ -1,11 +1,14 @@
-FROM maven:3.9.6-eclipse-temurin-17 AS Base
+FROM maven:3.9.6-eclipse-temurin-17 AS base
 WORKDIR /transaction-service
 COPY . .
 RUN mvn clean install -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine AS final
 WORKDIR /transaction-service
-COPY --from=Base /transaction-service/target/*.jar ./app.jar
+COPY --from=base /transaction-service/target/*.jar ./app.jar
+RUN apk add --no-cache curl
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
+HEALTHCHECK --start-period=40s --interval=30s --timeout=10s --retries=3 \
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
 
